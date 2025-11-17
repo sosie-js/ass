@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-import os, re, sys, functools, collections;
-version_info = ( 1 , 0 , 4 );
+import os, re, sys, functools, collections, math;
+version_info = ( 1 , 0 , 5 );
 
 
 
@@ -49,7 +49,7 @@ class ASS:
 		@classmethod
 		def str_to_integer(cls, val, *args):
 			try:
-				return int(val, 10);
+				return int(math.floor(float(val))) #int(val, 10) fails with float
 			except ValueError:
 				return 0;
 
@@ -823,9 +823,14 @@ class ASS:
 			# Custom comments
 			source.extend([ u"; {0:s}".format(c) for c in comments ]);
 
-		# Script info
+
+		# Script info (and Aegisub Project Garbage)
+		APG=True
 		for entry in self.script_info_ordered:
 			if (entry.key in self.script_info):
+				if (entry.key == "Last Style Storage" or entry.key == "Video File" ) and APG :
+					source.append(u"\n[Aegisub Project Garbage]\n");
+					APG=False
 				source.append(u"{0:s}: {1:s}\n".format(entry.key, entry.value));
 
 		source.append(u"\n");
